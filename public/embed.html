@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <script type="text/javascript" src=""></script>
+    <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script src="//platform.instagram.com/en_US/embeds.js"></script>
+    <style type="text/css">
+      body {
+        background-color: transparent;
+      }
+      html, body, .container {
+        height: 95%;          
+      }
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #embed {
+        width: 468px;
+      }
+    </style>
+  </head>
+  <body>
+    <br><br>
+    <div class="container">
+      <div id="embed"></div>
+    </div>
+    <script type="text/javascript">
+      // Parses location to get search parameters
+      function getJsonFromUrl() {
+        var query = location.search.substr(1);
+        var result = {};
+        query.split("&").forEach(function(part) {
+          var item = part.split("=");
+          result[item[0]] = decodeURIComponent(item[1]);
+        });
+        return result;
+      }
+
+      var embedUrl = getJsonFromUrl();
+
+      // Embed creation using Twitter and Instagram widgets
+      if(embedUrl.type === "twitter") {
+        var pathArray = embedUrl.url.split("/");
+        var tweetID = pathArray[pathArray.length - 1];
+        if(tweetID) {
+          twttr.widgets.createTweet(
+            tweetID,
+            document.getElementById('embed'),
+            {
+              align: 'center',
+              width: '500'
+            })
+            .then(function (el) {
+              //console.log("Tweet embedded.")
+            });
+        }
+      } else if (embedUrl.type === "instagram") {
+        // JSONP approach used to get oEmbed HTML from Instagram API
+        var instagramUrl = embedUrl.url.indexOf("/?") !== -1 ? embedUrl.url.substr(0, embedUrl.url.indexOf("/?")) : embedUrl.url;
+        var newScriptElem = document.createElement('script');
+        newScriptElem.type = 'text/javascript';
+        newScriptElem.src = "http://api.instagram.com/oembed?url=" + instagramUrl + "&callback=instagramCB&omitscript=true";
+        var currentDiv = document.getElementById("embed");
+        currentDiv.appendChild(newScriptElem); 
+      } else {
+        console.log("Unknown embed type!");
+      }
+
+      // JSONP callback that takes Instagram response and uses embed html
+      function instagramCB(res) {
+        if(res.html) {
+          var instagramEmbed = document.createElement('div');
+          instagramEmbed.innerHTML = res.html;
+          var currentDiv = document.getElementById("embed");
+          currentDiv.appendChild(instagramEmbed); 
+          instgrm.Embeds.process();
+        }  
+      }
+    </script>
+
+  </body>
+</html>

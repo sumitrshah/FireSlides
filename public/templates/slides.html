@@ -1,0 +1,171 @@
+<div class="reveal">
+  <div class="slides" ng-show="showSlides">
+    <!-- Title and other intro slides -->
+    <section>
+      <h3 ng-hide="deckLoaded"><span class="text-capitalize">Loading &nbsp;&nbsp;</span><i class="fa fa-refresh fa-spin" style="font-size:smaller;"></i></h3>
+      <h2 ng-show="deckLoaded">{{deck.title}}</h2>
+      <h3 ng-show="privateDeck">This is a private deck!</h3>
+      <h3 ng-show="invalidDeck">Invalid Deck ID!</h3>
+    </section>
+
+    <!-- Test Section --> 
+    <!-- End Test Section -->
+
+    <!-- Content slide -->
+    <section ng-repeat="post in deck.posts | orderBy: 'date' : reverse" class="stack" id="{{'post' + post.id}}" data-background-iframe="{{post.backgroundUrl}}">
+      
+      <!-- Initial post -->
+      <section>
+        <!-- Card for post will only show if post has content field -->
+        <div class="comment-list" ng-show="showCard(post)">
+          <article class="row">
+            <div class="col-md-12 col-sm-12">
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <header class="text-left">
+                    
+                      <a href=""><i class="fa fa-clock-o"></i> <span class="text-capitalize">&nbsp;&nbsp;{{post.date | date:'MMM d, y - h:mm:ss a'}}</span> &nbsp;<span class="text-lowercase"><em>{{getTimestamp(post.date)}}</em></span></a>
+                      <span class="pull-right"><a href="" class="text-capitalize"><i class="fa fa-user"></i> &nbsp;&nbsp;{{post.poster.name}}</a></span>
+                    
+                  </header>
+                  <div class="comment-post">
+                    <p ng-bind-html="getPostHtml(post)"></p>
+                  </div>
+                  <footer>
+                    <a href=""><span class="text-capitalize">Post</span> {{$index + 1}} <span class="text-lowercase">of</span> {{deck.posts.length}}</a><span class="pull-right" ng-show="post.numReplies"><a href=""><i class="fa fa-comment"></i> &nbsp;&nbsp;{{post.numReplies}}</a></span>
+                  </footer>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+      <!-- Replies to initial post -->
+      <section ng-repeat="reply in post.replies">
+        <div class="comment-list">
+          <article class="row">
+            <div class="col-md-12 col-sm-12">
+              <div class="panel panel-default arrow left">
+                <div class="panel-body">          
+                  <header class="text-left">
+                    <a href=""><i class="fa fa-clock-o"></i> <span class="text-capitalize">&nbsp;&nbsp;{{reply.date | date:'MMM d, y - h:mm:ss a'}}</span> &nbsp;<span class="text-lowercase"><em>{{getTimestamp(reply.date)}}</em></span></a> <span class="pull-right"><a href=""><span class="text-capitalize"><i class="fa fa-user"></i> &nbsp;&nbsp;{{reply.poster.name}}</span></a></span>
+                  </header>
+                  <div class="comment-post">
+                    <div ng-bind-html="getPostHtml(reply)"></div>                    
+                  </div> 
+                  <footer>
+                    <span class="pull-right"><a href=""><i class="fa fa-reply"></i></a></span>
+                  </footer>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <div class="left-controls">
+    <a href="" ng-click="jumpToBeginning()"><i class="fa fa-chevron-left"></i></small></a>&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="text-muted" ng-show="currentSlide === 0">Title</span>
+    <span class="text-muted" ng-show="currentSlide > 0">{{currentSlide}} / {{deck.posts.length}}</span> &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="" ng-click="jumpToEnd()"><i class="fa fa-chevron-right"></i></small></a>
+  </div>
+
+  <div class="top-controls">
+    <a href="" data-toggle="modal" data-target="#threadModal" ng-click="hideSlides(true)"><i class="fa fa-list"></i></a>
+  </div>
+
+  <div class="top-notifications">
+    <a href="" ng-show="newPostHistory.length > 0" ng-click="goToNewPosts()"><i class="fa fa-comment"></i> &nbsp;&nbsp;{{newPostHistory.length}}</a> &nbsp;&nbsp; <span class="badge" ng-show="!read">Unread</span>
+  </div>
+
+</div>
+
+<!-- Modal for displaying thread view -->
+<div class="modal fade" id="threadModal" tabindex="-1" role="dialog" aria-labelledby="threadModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <h4 class="modal-title reveal" id="threadModalLabel">
+        {{deck.title}}
+        <a href="" class="pull-right modal-close" data-dismiss="modal" class="close" aria-label="Close" aria-hidden="true" ng-click="hideSlides(false)">&times;</a>
+      </h4>
+      <br><br>
+      <div class="modal-body">
+        <div class="comment-list">
+          <div ng-repeat="post in deck.posts | orderBy: 'date' : reverse">
+            <!-- Initial post -->
+            <article class="row">
+              <div class="col-md-2 col-sm-2 hidden-xs hidden-sm">
+                <figure class="thumbnail reveal center-block">
+                  <img class="img-responsive img-circle" src="img/demo-avatar.jpg" />
+                  <figcaption class="text-center">
+                    <span class="modal-thumbnail">
+                      <a href="">{{post.poster.name}}</a>
+                    </span>
+                  </figcaption>
+                </figure>
+              </div>
+              <div class="col-md-10 col-sm-10">
+                <div class="panel panel-default arrow left">
+                  <div class="panel-body">
+                    <div class="reveal">
+                      <header class="text-left">                    
+                        <div class="modal-stamp"><a href=""><i class="fa fa-clock-o"></i> &nbsp;&nbsp;{{post.date | date: 'MMM d, y - h:mm:ss a'}} &nbsp;<em>{{getTimestamp(post.date)}}</em></a></div>
+                      </header>
+                      <div class="comment-post">
+                        <div class="modal-post">
+                          <div ng-bind-html="getPostHtml(post)"></div>
+
+                          <div id="{{'modal-embed' + post.id}}">{{insertModalEmbed(post)}}</div>     
+
+                          <br>
+                          <div><span class="visible-xs visible-sm"><a href=""><i class="fa fa-user"></i> &nbsp;{{post.poster.name}}</a></span></div>
+                        </div>                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>            
+            </article>
+            <!-- Replies to initial post -->
+            <article class="row" ng-repeat="reply in post.replies">
+              <div class="col-md-2 col-sm-2 col-md-offset-1 col-sm-offset-0 hidden-xs hidden-sm">
+                <figure class="thumbnail reveal center-block">
+                  <img class="img-responsive img-circle" src="img/demo-avatar.jpg" />
+                  <figcaption class="text-center">
+                    <span class="modal-thumbnail">
+                      <a href="">{{reply.poster.name}}</a>
+                    </span>
+                  </figcaption>
+                </figure>
+              </div>
+              <div class="col-md-9 col-sm-9">
+                <div class="panel panel-default arrow left">
+                  <div class="panel-heading right">Reply</div>
+                  <div class="panel-body">
+                    <div class="reveal">
+                      <header class="text-left">
+                        <div class="modal-stamp"><a href=""><i class="fa fa-clock-o"></i> &nbsp;&nbsp;{{reply.date | date: 'MMM d, y - h:mm:ss a'}} &nbsp;<em>{{getTimestamp(reply.date)}}</em></a></div>
+                      </header>
+                      <div class="comment-post">
+                        <div class="modal-post">
+                          <div ng-bind-html="getPostHtml(reply)"></div>
+                          <br><br>
+                          <div><span class="visible-xs visible-sm"><a href=""><i class="fa fa-user"></i> &nbsp;{{reply.poster.name}}</a></span></div>
+                        </div>
+                      </div>      
+                    </div>    
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class="reveal modal-close-footer"><a href="" data-dismiss="modal" id="threadCloseButton" ng-click="hideSlides(false)">Close</a></div>
+      <br><br>
+    </div>
+  </div>
+</div>

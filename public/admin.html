@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="FireSlidesAdmin">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>FireSlides Admin</title>
+
+  <!-- jQuery and Bootstrap -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+  <!-- AngularJS and modules -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+
+  <!-- Firebase -->
+  <script type="text/javascript" src="js/firebase.js"></script>
+
+  <!-- textAngular JS -->
+  <script src='js/textAngular-rangy.min.js'></script>
+  <script src='js/textAngular-sanitize.min.js'></script>
+  <script src='js/textAngular.min.js'></script>
+
+  <!-- Angular app files -->
+  <script src="js/fireslides_admin.js"></script>
+
+  <!-- MomentJS -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+
+  <!-- Bootstrap Core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+  <!-- FireSlides CSS -->
+  <link rel="stylesheet" type="text/css" href="css/fireslides_admin.css">
+
+  <!-- textAngular CSS -->
+  <link rel='stylesheet' href='css/textAngular_mod.css'>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+
+  <!-- Embed widgets-->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <script async src="https://platform.instagram.com/en_US/embeds.js"></script>
+  <script async src="https://platform.vine.co/static/scripts/embed.js"></script>
+  
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+</head>
+
+<body ng-controller="MainController">
+
+  <div class="container">
+
+  <!-- Navigation -->
+  <div class="navbar-wrapper">
+    <div class="container">
+      <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">FireSlides</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">           
+            <ul class="nav navbar-nav navbar-right">               
+              <li ng-hide="!loggedIn">
+                <a href="" ng-click="showNewDeckOptions()"><i class="fa fa-fw fa-plus-circle"></i> New Deck</a>
+              </li>
+              <li class="dropdown" ng-hide="!loggedIn">
+                <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-play-circle"></i> Decks <b class="caret"></b></a>
+                <ul class="dropdown-menu scrollable-menu">
+                  <li ng-repeat="deck in decks">
+                    <a href="" ng-click="loadDeck($index)">{{deck.title}}</a>
+                  </li>
+                  <li ng-show="!decks.length">
+                    <a href="">(None yet)</a>
+                  </li>  
+                </ul>
+              </li>
+              <li class="dropdown" ng-hide="loggedIn">
+                <a href="/login.html"> Login </a>
+                <!--
+                <a href="" class="dropdown-toggle" data-toggle="dropdown"> Login <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="" ng-click="login('Google')"><i class="fa fa-google"></i> &nbsp;&nbsp;Google </a>
+                  </li>
+                  <li>
+                    <a href="" ng-click="login('Twitter')"><i class="fa fa-twitter"></i> &nbsp;&nbsp;Twitter</a>
+                  </li>
+                </ul>-->
+              </li>
+              <li class="dropdown" ng-hide="!loggedIn">
+                <a href="" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> &nbsp;{{user.name}} <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="" ng-click="showProfile()"><i class="fa fa-fw fa-user"></i> Profile</a>
+                  </li>
+                  <li>
+                    <a href=""><i class="fa fa-fw fa-envelope"></i> Inbox</a>
+                  </li>
+                  <li>
+                    <a href=""><i class="fa fa-fw fa-gear"></i> Settings</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="" ng-click="logout()"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid page-content">    
+    <br>
+
+    <!-- Spinners for logging in -->
+    <div ng-show="UI.showLoggingIn" class="text-center">Attempting to log in <i class="fa fa-spinner fa-spin"></i></div>
+    
+    <!-- End spinners -->
+    
+    <!-- Profile Info -->
+    <div ng-show="UI.showProfile">
+      <div class="panel deck-panel">
+        <div class="panel-heading deck-panel-heading">
+          <h3 class="panel-title deck-panel-title text-center">User Profile</h3>
+        </div>
+        <div class="panel-body deck-panel-body">          
+          <div class="row">
+            <div class= "col-lg-4">
+              <div class="card">
+                <div class="card-title"><strong>Basic Account Info</strong></div>
+                <br>
+                <div class="card-content">                  
+                  <div class="table-responsive">
+                    <table class="table">
+                      <tbody>
+                        <tr>
+                          <td><strong>Name:</strong></td>
+                          <td>{{user.name}}</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Display Name:</strong></td>
+                          <td>[blank]</td>
+                        </tr>               
+                        <tr>
+                          <td><strong>Login Provider:</strong></td>
+                          <td><span class="text-capitalize">{{user.provider}}</span></td>
+                        </tr>
+                        <tr>
+                          <td><strong>Email:</strong></td>
+                          <td>{{user.email}}</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Signup Date:</strong></td>
+                          <td>{{user.joined | date: 'MMM d, y'}}</td>
+                        </tr>
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <div class="card-action">
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                </div>
+              </div>
+            </div>
+
+            
+
+            <div class= "col-lg-4">
+              <div class="card">
+                <div class="card-title"><strong>Public Profile</strong></div>
+                <div class="card-content">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <tbody>
+                        <tr>
+                          <td><strong>Name:</strong></td>
+                          <td>{{user.name}}</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Email:</strong></td>
+                          <td>{{user.email}}</td>
+                        </tr>               
+                        <tr>
+                          <td><strong>Twitter:</strong></td>
+                          <td>[blank]</span></td>
+                        </tr>
+                        <tr>
+                          <td><strong>Vine:</strong></td>
+                          <td>[blank]</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Website:</strong></td>
+                          <td>[blank]</td>
+                        </tr>  
+                        <tr>
+                          <td><strong>Location:</strong></td>
+                          <td>[blank]</td>
+                        </tr> 
+                        <tr>
+                          <td><strong>Bio:</strong></td>
+                          <td>[blank]</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="card-action">
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                </div>
+              </div>
+            </div>
+
+            <div class= "col-lg-4">
+              <div class="card">                
+                <div class="card-title"><strong>Avatar</strong></div>
+                <div class="card-content">
+                  <!--
+                  <img class="img-responsive img-circle center-block" src="http://www.keita-gaming.com/assets/profile/default-avatar-c5d8ec086224cb6fc4e395f4ba3018c2.jpg" />-->
+                  <img class="img-responsive img-circle center-block" src="img/demo-avatar.jpg" />
+                  
+                </div>
+                <div class="card-action">
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <br>
+          <div class="row">
+            <div class= "col-lg-4">
+              <div class="card">
+                <div class="card-title"><strong>Login Provider Info</strong></div>
+                <div class="card-content">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <tbody>
+                        <tr>
+                          <td><strong>Provider:</strong></td>
+                          <td><span class="text-capitalize">{{user.provider}}</span></td>
+                        </tr>
+                        <tr>
+                          <td><strong>Display Name:</strong></td>
+                          <td>{{user.providerInfo.displayName}}</td>
+                        </tr> 
+                        <tr ng-show="user.providerInfo.username">
+                          <td><strong>Username:</strong></td>
+                          <td>{{user.providerInfo.username}}</td>
+                        </tr>                 
+                        <tr ng-show="user.providerInfo.email">
+                          <td><strong>Email:</strong></td>
+                          <td>{{user.providerInfo.email}}</td>
+                        </tr>                     
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <div class="card-action">
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                </div>
+              </div>
+            </div>
+            <div class= "col-lg-4">
+              <div class="card">
+
+                <div class="card-title"><strong>Organizations</strong></div>
+                <div class="card-content">
+                  <p>Cards for display in portfolio style material design by Google.</p>
+                </div>
+                
+                <div class="card-action">
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                  <a href="#" target="new_blank">Link</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="panel-footer deck-panel-footer">
+        </div>
+      </div>      
+    </div>
+    <!-- End Profile Info -->
+
+    <!-- Alerts -->    
+    <div ng-repeat="alert in UI.alerts.general" class="{{'alert alert-' + alert.type + ' alert-dismissable'}}" role="alert">
+      {{alert.msg}}
+      <button type="button" class="close" aria-label="Close" ng-click="closeGeneralAlert($index)">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <!-- End Alerts -->
+
+    <!-- Spinner for loading decks -->
+    <div ng-show="UI.showLoadingDecks" class="text-center">Loading user decks <i class="fa fa-spinner fa-spin"></i></div>
+    <!-- End spinner -->
+
+    <!-- Create New Deck Panel -->
+    <div ng-show="UI.showNewDeckOptions">
+      <div class="panel deck-panel">
+        <div class="panel-heading deck-panel-heading">
+          <h3 class="panel-title deck-panel-title text-center">Add New Deck</h3>
+        </div>
+        <div class="panel-body deck-panel-body">
+
+          <br>
+
+          <form class="form-horizontal">
+            
+            <div class="col-sm-offset-1 col-sm-10">
+            <!-- New Deck Alerts -->
+            <div ng-repeat="alert in UI.alerts.newDeckAlerts" class="{{'alert alert-' + alert.type + ' alert-dismissable'}}" role="alert">
+              {{alert.msg}}
+              <button type="button" class="close" aria-label="Close" ng-click="closeNewDeckAlert($index)">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <!-- End New Deck Alerts -->
+            </div>
+
+            <div class="form-group">
+              <label for="deckTitle" class="col-sm-3 control-label">Deck Title</label>
+              <div class="col-sm-7">
+                <input type="text" class="form-control" id="deckTitle" placeholder="enter title (required)" ng-model="newDeckTitle" maxlength="70">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="deckSubtitle" class="col-sm-3 control-label">Subtitle</label>
+              <div class="col-sm-7">
+                <input type="text" class="form-control" id="deckSubtitle" placeholder="enter subtitle" ng-model="newDeckSubtitle" maxlength="100">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-3">
+                <label class="radio-inline">
+                  <input type="radio" name="publicPrivateOptions" id="publicDeck" ng-model="deckType" value="public" ng-checked="true"> Public
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" name="publicPrivateOptions" id="privateDeck" ng-model="deckType" value="private"> Private
+                </label>
+              </div>
+              <div class="col-sm-3"> 
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" ng-model="orgAssignment"> Assign to Organization?
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <br>
+
+            <!--
+            <div class="form-group">
+              <label for="deckLocation" class="col-sm-3 control-label">Location</label>
+              <div class="col-sm-7">
+                <input type="password" class="form-control" id="deckLocation" placeholder="location">
+              </div>
+            </div>
+            -->
+
+            <div class="form-group" ng-show="orgAssignment">
+              <label for="deckOwner" class="col-sm-3 control-label">Organization</label>
+              <div class="col-sm-7">
+                <select class="form-control">
+                  <option>None</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </select>
+              </div>
+            </div>
+            <br>
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-7">
+                <button class="btn btn-warning pull-right" ng-click="createDeck(newDeckTitle)">Add</button>
+              </div>
+            </div>
+          </form>
+
+
+        </div>
+        <div class="panel-footer deck-panel-footer">
+        </div>
+      </div>
+    </div>
+    <!-- End Create New Deck Panel -->
+
+    <!-- Current Deck Panel -->
+    <div class="panel deck-panel" ng-show="currentDeck">
+      <div class="panel-heading deck-panel-heading">
+          <span class="label label-success pull-right" ng-show="currentDeck.open">Open</span>
+          <h3 class="panel-title deck-panel-title text-center">{{currentDeck.title}}</h3>
+      </div>
+      <div class="panel-body deck-panel-body">
+        <!-- Deck Info and Post Box -->
+        <div>
+          <em><strong>Deck ID:</strong> &nbsp;{{currentDeck.id}}</em>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <em><strong>Type:</strong> &nbsp;<span class="text-capitalize">{{currentDeck.type}}</span></em>
+          <span class="pull-right"><button class="btn btn-default" ng-click="showPostBox()"><i class="fa fa-pencil-square-o"></i> Post</button></span>
+          <br><br>
+          <div ng-show="UI.showPostBox" class="post-box">
+            <text-angular ng-model="postHtml" ta-toolbar="[['bold','italics', 'underline'],['ul','ol'],['insertLink'],['charcount']]" ta-max-text="600"></text-angular>
+            <br>
+            <span class="dropdown">
+              &nbsp;&nbsp;&nbsp;
+              <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                Embed &nbsp;<span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('twitter')"><i class="fa fa-twitter fa-fw"></i> &nbsp;Tweet</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('instagram')"><i class="fa fa-instagram fa-fw"></i> &nbsp;Instagram</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('vine')"><i class="fa fa-vine fa-fw"></i> &nbsp;Vine</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('youtube')"><i class="fa fa-youtube fa-fw"></i> &nbsp;YouTube</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('vimeo')"><i class="fa fa-vimeo fa-fw"></i> &nbsp;Vimeo</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('webImageVid')"><i class="fa fa-picture-o fa-fw"></i></i> &nbsp;Web Image/Video</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('soundcloud')"><i class="fa fa-soundcloud fa-fw"></i></i> &nbsp;Soundcloud</a></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('imageUpload')"><i class="fa fa-paperclip fa-fw"></i></i></i> &nbsp;Upload image</a></li>
+                <li role="presentation" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="" ng-click="showEmbedOption('none')"><i class="fa fa-times fa-fw"></i> &nbsp;<em>None</em></a></li>
+              </ul>
+            </span>
+            <span class="pull-right">
+              <button class="btn btn-warning" ng-click="newPost(currentDeck.id)" ng-disabled="UI.disablePostSubmitButton">Submit</button>
+            </span>
+            <br><br>
+            <div class="row">
+
+              <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="embed-option" ng-show="UI.showPostEmbed.twitter">
+                  <strong>Tweet URL:</strong>
+                  <div class="input-group">
+                    <input type="url" class="form-control" placeholder="Enter link to Tweet..." ng-model="embedInfo.tweetUrl">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" ng-click="submitEmbed(currentDeck.id, 'twitter')" ng-disabled="!embedInfo.tweetUrl">Submit</button>
+                    </span>
+                  </div>
+
+                  <div ng-show="UI.showEmbedSpinner">
+                    Submitting embed &nbsp;<i class="fa fa-spinner fa-spin"></i>
+                  </div>
+
+                  <br>
+                </div>
+
+                <div class="embed-option" ng-show="UI.showPostEmbed.instagram">
+                  <strong>Instagram URL:</strong>
+                  <div class="input-group">
+                    <input type="url" class="form-control" placeholder="Enter link to Instagram..." ng-model="embedInfo.instagramUrl">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" ng-click="submitEmbed(currentDeck.id, 'instagram')" ng-disabled="!embedInfo.instagramUrl">Submit</button>
+                    </span>
+                  </div>
+                  <div ng-show="UI.showEmbedSpinner">
+                    Submitting embed &nbsp;<i class="fa fa-spinner fa-spin"></i>
+                  </div>
+                  <br>
+                </div>
+
+                <div class="embed-option" ng-show="UI.showPostEmbed.vine">
+                  <strong>Vine URL:</strong>
+                  <div class="input-group">
+                    <input type="url" class="form-control" placeholder="Enter link to Vine..." ng-model="embedInfo.vineUrl">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" ng-click="submitEmbed(currentDeck.id, 'vine')" ng-disabled="!embedInfo.vineUrl">Submit</button>
+                    </span>
+                  </div>
+                  <div ng-show="UI.showEmbedSpinner">
+                    Submitting embed &nbsp;<i class="fa fa-spinner fa-spin"></i>
+                  </div>
+                  <br>
+                </div>
+
+                <div class="embed-option" ng-show="UI.showPostEmbed.youtube">
+                  <strong>YouTube URL:</strong>
+                  <div class="input-group">
+                    <input type="url" class="form-control" placeholder="Enter link to YouTube video..." ng-model="embedInfo.youtubeUrl">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" ng-click="submitEmbed(currentDeck.id, 'youtube')" ng-disabled="!embedInfo.youtubeUrl">Submit</button>
+                    </span>
+                  </div>
+                  
+                  <div ng-show="UI.showEmbedSpinner">
+                    Submitting embed &nbsp;<i class="fa fa-spinner fa-spin"></i>
+                  </div>
+
+                  <br>
+                </div>
+
+                <div class="embed-option" ng-show="UI.showPostEmbed.vimeo">
+                  <strong>Vimeo URL:</strong>
+                  <div class="input-group">
+                    <input type="url" class="form-control" placeholder="Enter link to Vimeo video..." ng-model="embedInfo.vimeoUrl">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" ng-click="submitEmbed(currentDeck.id, 'vimeo')" ng-disabled="!embedInfo.vimeoUrl">Submit</button>
+                    </span>
+                  </div>
+                  <div ng-show="UI.showEmbedSpinner">
+                    Submitting embed &nbsp;<i class="fa fa-spinner fa-spin"></i>
+                  </div>
+                  <br>
+                </div>
+ 
+                <div class="embed-option" ng-show="UI.showPostEmbed.webImageVid">
+                  <strong>Image or Video URL:</strong>
+                  <div class="input-group">
+                    <input type="url" class="form-control" placeholder="Enter link to image on web..." ng-model="embedInfo.webImageVidUrl">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" ng-click="submitEmbed(currentDeck.id, 'webImageVid')" ng-disabled="!embedInfo.webImageVidUrl">Submit</button>
+                    </span>
+                  </div>
+                  <div ng-show="UI.showEmbedSpinner">
+                    Submitting embed &nbsp;<i class="fa fa-spinner fa-spin"></i>
+                  </div>
+                  <br>
+                </div>
+
+                <div class="embed-option" ng-show="UI.showPostEmbed.soundcloud">
+                  <strong>Soundcloud URL:</strong>
+                  <div class="input-group">
+                    <input type="url" class="form-control" placeholder="Enter link to Soundcloud audio..." ng-model="embedInfo.soundcloudUrl">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" ng-click="submitEmbed(currentDeck.id, 'soundcloud')" ng-disabled="!embedInfo.soundcloudUrl">Submit</button>
+                    </span>
+                  </div>
+                  <div ng-show="UI.showEmbedSpinner">
+                    Submitting embed &nbsp;<i class="fa fa-spinner fa-spin"></i>
+                  </div>
+                  <br>
+                </div>
+
+                
+
+                <div class="embed-option" ng-show="UI.showPostEmbed.imageUpload">
+                  <div class="input-group">
+                    <input type="file" name="file">
+                    <br>
+                    <button class="btn btn-default" ng-click="submitEmbed(currentDeck.id, 'imageUpload')">Submit</button>
+                  </div>
+                  <div ng-show="UI.showEmbedSpinner">
+                    Submitting embed &nbsp;<i class="fa fa-spinner fa-spin"></i>
+                  </div>
+                  <br>
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- Post Alerts -->
+            <div ng-repeat="alert in UI.alerts.postAlerts" class="{{'alert alert-' + alert.type + ' alert-dismissable'}}" role="alert">
+              {{alert.msg}}
+              <button type="button" class="close" aria-label="Close" ng-click="closePostAlert($index)">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <!-- End Post Alerts -->
+            <hr>
+          </div>
+        </div>
+        <!-- End Deck Info and Post Box -->
+        
+        <br>
+
+        <!-- Deck Posts and Replies -->
+        <div class="comment-list">  
+          <div ng-repeat="post in currentDeck.posts">
+            <!-- Deck Posts -->
+            <article class="row">
+              <!-- Poster Info -->
+              <div class="col-md-2 col-sm-2 hidden-xs">
+                <figure class="thumbnail center-block">
+                  <!--
+                  <img class="img-responsive img-circle" src="http://www.keita-gaming.com/assets/profile/default-avatar-c5d8ec086224cb6fc4e395f4ba3018c2.jpg" />-->
+                  <img class="img-responsive img-circle" src="img/demo-avatar.jpg" />
+                  <figcaption class="text-center">{{post.poster.name}}</figcaption>
+                </figure>
+              </div>
+              <!-- End Poster Info -->
+              <!-- Post Content -->
+              <div class="col-md-10 col-sm-10">
+                <div class="panel panel-default arrow left">
+                  <div class="panel-body">
+                    <header class="text-left">                    
+                      <div><a href=""><i class="fa fa-clock-o"></i> &nbsp;&nbsp;{{post.date | date: 'MMM d, y - h:mm:ss a'}} <em>{{getTimestamp(post.date)}}</em></a></div>
+                    </header>
+                    <div class="comment-post">
+                      <br>
+                      <p ng-bind-html="getPostHtml(post)"></p>
+                      <!-- Insert embed function only does something if Twitter, Vine, or Instagram embed -->
+                      <div id="{{'embed' + post.id}}">{{::insertEmbed(post)}}</div>
+                    </div>
+                    <br>
+                    <p>
+                      <span class="pull-right"><a href="" class="btn btn-default btn-sm" ng-click="showReplyBox(post.id)"><i class="fa fa-reply"></i> reply</a></span>
+                      <span class="visible-xs"><a href=""><i class="fa fa-user"></i> &nbsp;{{post.poster.name}}</a></span>
+                    </p>
+                    <br>
+                    <!-- Reply Submission Area -->
+                    <div ng-show="UI.showReplyBox[post.id]">
+                      <hr>
+                      
+                      <text-angular ng-model="replyHtml[post.id]" ta-toolbar="[['bold','italics', 'underline'],['ul','ol'],['insertLink'],['charcount']]" ta-max-text="600"></text-angular>
+                      <br>
+                      <button class="btn btn-warning pull-right" ng-click="postReply(currentDeck.id, post.id)">Submit Reply</button>
+                      <br><br>
+                      <!-- Reply Alerts-->
+                      <div ng-repeat="alert in UI.alerts.replyAlerts[post.id]" class="{{'alert alert-' + alert.type + ' alert-dismissable'}}" role="alert">
+                        {{alert.msg}}
+                        <button type="button" class="close" aria-label="Close" ng-click="closeReplyAlert(post.id, $index)">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <!-- End Reply Alerts -->
+                    </div>
+                    <!-- End Reply Submission Area -->
+
+                  </div>
+                </div>
+              </div>
+              <!-- End Post Content -->
+            </article>
+            <!-- End Deck Posts -->
+            <!-- Deck Replies -->
+            <article class="row" ng-repeat="reply in post.replies">
+              <div class="col-md-2 col-sm-2 col-md-offset-1 col-sm-offset-0 hidden-xs">
+                <figure class="thumbnail center-block">
+                  <!--
+                  <img class="img-responsive img-circle" src="http://www.keita-gaming.com/assets/profile/default-avatar-c5d8ec086224cb6fc4e395f4ba3018c2.jpg" />
+                  -->
+                  <img class="img-responsive img-circle" src="img/demo-avatar.jpg" />
+                  <figcaption class="text-center">{{reply.poster.name}}</figcaption>
+                </figure>
+              </div>
+              <div class="col-md-9 col-sm-9">
+                <div class="panel panel-default arrow left">
+                  <div class="panel-heading right">Reply</div>
+                  <div class="panel-body">
+                    <header class="text-left">
+                      <div><a href=""><i class="fa fa-clock-o"></i> &nbsp;&nbsp;{{reply.date | date: 'MMM d, y - h:mm:ss a'}} <em>{{getTimestamp(reply.date)}}</em></a></div>
+                    </header>
+                    <div class="comment-post">
+                      <div ng-bind-html="getPostHtml(reply)"></div>
+                    </div>
+                    <br>
+                    <p>                      
+                      <span class="visible-xs"><a href=""><i class="fa fa-user"></i> &nbsp;{{reply.poster.name}}</a></span>
+                    </p>                
+                  </div>
+                </div>
+              </div>
+            </article>
+            <!-- End Deck Replies -->
+          </div>
+          <!-- End Deck Posts and Replies -->
+        </div>
+
+      </div>
+      <div class="panel-footer deck-panel-footer"><strong>Created:</strong> &nbsp;{{currentDeck.createdAt | date:'MMM d, y - h:mm:ss a'}}</div>
+    </div>
+    <!-- End Current Deck Panel -->
+
+  </div>
+  <!-- /.container-fluid -->
+
+
+  </div>
+
+</body>
+
+</html>

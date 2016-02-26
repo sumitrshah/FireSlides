@@ -1,0 +1,81 @@
+{
+  "decks": {
+    "<deck-id>": {
+      "createdAt": "<date>",
+      "createdBy": "<user-id>",
+      "ownedBy": "<user-id>",
+      "id": "<deck-id>",
+      "title": "<title>",
+      "type": "<private or public>",
+      "open": "<bool>"
+    },
+    "two": { ... },
+    "three": { ... }
+  },
+  "deck-users": {
+    "<deck-id>": {
+      "<user-id>": true,
+      "mchen": true
+    },
+    "two": { ... },
+    "three": { ... }
+  }
+  "users": {
+    "<user-id>": {
+      "id": "",
+      "name": "",
+      "displayName": "",
+      "email": "",
+      "avatar": "<AWS S3 URL>",
+      "decks": {
+        "<deck-id>": true,
+        "two": true
+      },
+      "joined": "",
+      "organizations": {
+        "<org-id>": true,
+        "two": true
+      }
+    },
+    "two" : { ... }
+  },
+  "organizations": {
+    "<org-id>": {
+      "id": "",
+      "name": "",
+      "displayName": "",
+      "email": "",
+      "avatar": "<AWS S3 URL>",
+      "admin": "<user-id>"
+      "decks": {
+        "<deck-id>": true,
+        "two": true
+      },
+      "joined": "",
+      "users": {
+        "<user-id>": true,
+        "two": true
+      }
+
+    },
+    "two": true
+  },
+  "posts": {
+    "<deck-id>": {
+      "<post-id>": { 
+        "id": "<post-id>",
+        "poster": { 
+          "id": "<user-id>",
+          "name" "<user-name>"
+        }, 
+        "content": "foo", 
+        "attachment": "<urlForImg>", 
+        "date": "<date>" 
+      },
+      "p2": { ... },
+      "p3": { ... }
+    },
+    "two": { ... },
+    "three": { ... }
+  }
+}

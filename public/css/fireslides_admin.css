@@ -1,0 +1,327 @@
+/* GLOBAL STYLES
+-------------------------------------------------- */
+/* Padding below the footer and lighter body text */
+
+body {
+  padding-top: 60px;
+  background-color: #5a5a5a;
+}
+
+.scrollable-menu {
+  height: auto;
+  max-height: 300px;
+  overflow-x: hidden;
+}
+
+
+/* CUSTOMIZE THE NAVBAR
+-------------------------------------------------- */
+
+/* Special class on .container surrounding .navbar, used for positioning it into place. */
+.navbar-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+
+  margin-bottom: 20px;
+
+}
+
+/* Flip around the padding for proper display in narrow viewports */
+.navbar-wrapper > .container {
+  padding-right: 0;
+  padding-left: 0;
+}
+.navbar-wrapper .navbar {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.navbar-wrapper .navbar .container {
+  width: auto;
+}
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+@media (min-width: 768px) {
+
+  body {
+    padding-top: 80px;
+  }
+
+  /* Navbar positioning */
+  .navbar-wrapper {
+    margin-top: 20px;
+  }
+  .navbar-wrapper .container {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+  .navbar-wrapper .navbar {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  /* The navbar becomes detached from the top, so we round the corners */
+  .navbar-wrapper .navbar {
+    border-radius: 4px;
+  }
+
+  .post-box {
+    margin-left: 20px
+  }
+
+}
+
+
+.deck-panel {
+  border-color: #222222;
+}
+
+.deck-panel-heading, .deck-panel-footer {
+  background-color: #222222;
+}
+
+.deck-panel-body {
+  background-color: rgb(227, 227, 227);
+}
+
+.deck-panel-title {
+  color: #9D9D9D;
+}
+
+.deck-panel-footer {
+  color: #9D9D9D;
+}
+
+
+
+/*Comment List styles*/
+.comment-list .row {
+  margin-bottom: 0px;
+}
+.comment-list .panel .panel-heading {
+  padding: 4px 15px;
+  position: absolute;
+  border:none;
+  /*Panel-heading border radius*/
+  border-top-right-radius:0px;
+  top: 1px;
+}
+.comment-list .panel .panel-heading.right {
+  border-right-width: 0px;
+  /*Panel-heading border radius*/
+  border-top-left-radius:0px;
+  right: 16px;
+}
+.comment-list .panel .panel-heading .panel-body {
+  padding-top: 6px;  
+}
+
+.comment-list .panel-body {
+  background-color: #fff; 
+}
+
+.comment-list figcaption {
+  /*For wrap text is thumbnail*/
+  word-wrap: break-word;
+  font-size: 12px;
+  padding-top: 5px;
+}
+
+.comment-list .comment-post {
+  margin-top: 6px;
+  margin-left: 10px;
+}
+
+figure.thumbnail {
+  width: 75%;
+  background-color: transparent;
+  border: none;
+}
+
+
+/* Portrait tablets and medium desktops */
+@media (min-width: 768px) {
+  .comment-list .arrow:after, .comment-list .arrow:before {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: transparent;
+  }
+  .comment-list .panel.arrow.left:after, .comment-list .panel.arrow.left:before {
+    border-left: 0;
+  }
+  /*****Left Arrow*****/
+  /*Outline effect style*/
+  .comment-list .panel.arrow.left:before {
+    left: 0px;
+    top: 30px;
+    /*Use boarder color of panel*/
+    border-right-color: inherit;
+    border-width: 16px;
+  }
+  /*Background color effect*/
+  .comment-list .panel.arrow.left:after {
+    left: 1px;
+    top: 31px;
+    /*Change for different outline color*/
+    border-right-color: #FFFFFF;
+    border-width: 15px;
+  }
+  /*****Right Arrow*****/
+  /*Outline effect style*/
+  .comment-list .panel.arrow.right:before {
+    right: -16px;
+    top: 30px;
+    /*Use boarder color of panel*/
+    border-left-color: inherit;
+    border-width: 16px;
+  }
+  /*Background color effect*/
+  .comment-list .panel.arrow.right:after {
+    right: -14px;
+    top: 31px;
+    /*Change for different outline color*/
+    border-left-color: #FFFFFF;
+    border-width: 15px;
+  }
+}
+
+/* MATERIAL DESIGN CARDS
+-------------------------------------------------- */
+.card {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  background-color: whitesmoke;
+}
+
+.card {
+  margin-top: 10px;
+  box-sizing: border-box;
+  border-radius: 2px;
+  background-clip: padding-box;
+}
+
+.card div.card-title {
+    text-align: center;
+    padding-top: 10px;
+    font-size: 15px;    
+}
+
+.card .card-image {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.card .card-image img {
+  border-radius: 2px 2px 0 0;
+  background-clip: padding-box;
+  position: relative;
+  z-index: 5;
+}
+.card .card-image span.card-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 16px;
+  z-index: 10;
+}
+.card .card-content {
+  padding: 16px;
+  border-radius: 0 0 2px 2px;
+  background-clip: padding-box;
+  box-sizing: border-box;
+}
+.card .card-content p {
+  margin: 0;
+  color: inherit;
+}
+.card .card-content span.card-title {
+  line-height: 48px;
+}
+.card .card-action {
+  border-top: 1px solid rgba(160, 160, 160, 0.2);
+  padding: 16px;
+}
+.card .card-action a {
+  color: #ffab40;
+  margin-right: 16px;
+  transition: color 0.3s ease;
+  text-transform: uppercase;
+}
+.card .card-action a:hover {
+  color: #ffd8a6;
+  text-decoration: none;
+}
+
+/* LOGIN PAGE
+-------------------------------------------------- */
+
+.social-login-btn {
+  margin: 5px;
+  width: 30%;
+  font-size: 250%;
+  padding: 0;
+}
+
+.social-google {
+  background-color: #da573b;
+  border-color: #be5238;
+}
+.social-google:hover, .social-google:focus {
+  background-color: #be5238;
+  border-color: #9b4631;
+}
+
+.social-twitter {
+  background-color: #1daee3;
+  border-color: #3997ba;
+}
+.social-twitter:hover, .social-twitter:focus {
+  background-color: #3997ba;
+  border-color: #347b95;
+}
+
+
+.login-hr {
+  border-top-color: #C8C8C8;
+}
+
+.login-or {
+  color: #C8C8C8;
+  display: block;
+  position: relative;
+  left: 50%;
+  top: -2.1em;
+  margin-left: -1.5em;
+  background-color: #E3E3E3;
+  width: 3em;
+  text-align: center;
+}
+
+/* EMBED STYLES
+-------------------------------------------------- */
+
+.embed-option {
+  padding-left: 20px;
+}
+
+.embed-vine {
+  position: relative; 
+  padding-bottom: 100%; 
+  height: 0; 
+  overflow: hidden;
+}
+
+.embed-vine iframe, .embed-vine object, .embed-vine embed { 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+}
+
