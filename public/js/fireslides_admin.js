@@ -282,12 +282,13 @@ angular.module('FireSlidesAdmin.controllers', []).
 
         // Validate text so that no white space and add to firebase
         if(content && !(content.replace(/^\s+|\s+$/gm,'').length == 0)) {
-
           // Make sure all links have external target
           var externalTargetHtml = angular.element(content);
           externalTargetHtml.find('a').attr('target', '_blank');
-          content = externalTargetHtml[0].outerHTML;
-    
+          content = "";
+          for(var i = 0; i < externalTargetHtml.length; i++) {
+            content += externalTargetHtml[i].outerHTML;
+          }
           // Create new unique post ID
           var newPostRef = postsRef.child(deckID).push();
           var newPost = {
@@ -347,8 +348,10 @@ angular.module('FireSlidesAdmin.controllers', []).
           // Make sure all links have external target
           var externalTargetHtml = angular.element(content);
           externalTargetHtml.find('a').attr('target', '_blank');
-          content = externalTargetHtml[0].outerHTML;
-
+          content = "";
+          for(var i = 0; i < externalTargetHtml.length; i++) {
+            content += externalTargetHtml[i].outerHTML;
+          }
           
           // Create new unique reply post ID
           var newReplyRef = postsRef.child(deckID).child(postID).child('replies').push();
